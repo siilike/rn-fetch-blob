@@ -16,7 +16,7 @@
 #import "IOS7Polyfill.h"
 #import <CommonCrypto/CommonDigest.h>
 #import "RNFetchBlobProgress.h"
-#import "AppDelegate.h"
+// #import "AppDelegate.h"
 #if __has_include(<React/RCTAssert.h>)
 #import <React/RCTRootView.h>
 #import <React/RCTLog.h>
@@ -528,8 +528,8 @@ totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite {
              sendDeviceEventWithName:EVENT_PROGRESS
              body:@{
                     @"taskId": taskId,
-                    @"written": [NSString stringWithFormat:@"%d", bytesWritten],
-                    @"total": [NSString stringWithFormat:@"%d", totalBytesWritten]
+                    @"written": [NSString stringWithFormat:@"%d", totalBytesWritten],
+                    @"total": [NSString stringWithFormat:@"%d", totalBytesExpectedToWrite]
                     }
              ];
         }
@@ -607,6 +607,7 @@ didFinishDownloadingToURL:(NSURL *)location {
 
 #pragma mark - URLSessionDidFinishEventsForBackgroundURLSession
 
+/* XXX TODO not entirely sure how to fix AppDelegate reference without hardcoding project in header paths.
 - (void) URLSessionDidFinishEventsForBackgroundURLSession:(NSURLSession *)session
 {
     NSLog(@"sess done in background");
@@ -634,10 +635,9 @@ didFinishDownloadingToURL:(NSURL *)location {
                 }];
             }
         }
-    }];
-    
-    
+    }];   
 }
+*/
 
 
    #pragma mark - Complete and Error callback
