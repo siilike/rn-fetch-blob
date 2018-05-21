@@ -35,6 +35,7 @@ A project committed to making file access and data transfer easier and more effi
  * [Multipart/form upload](#multipartform-data-example-post-form-data-with-file-and-data)
  * [Upload/Download progress](#user-content-uploaddownload-progress)
  * [Cancel HTTP request](#user-content-cancel-request)
+ * [iOS Background Downloading/Uploading](#ios-background-transfer-support)
  * [Android Media Scanner, and Download Manager Support](#user-content-android-media-scanner-and-download-manager-support)
  * [Self-Signed SSL Server](#user-content-self-signed-ssl-server)
  * [Transfer Encoding](#user-content-transfer-encoding)
@@ -472,7 +473,7 @@ If you have existing code that uses `whatwg-fetch`(the official **fetch**), it's
 
 [See document and examples](https://github.com/wkh237/react-native-fetch-blob/wiki/Fetch-API#fetch-replacement)
 
-### iOS Background Downloading
+### iOS Background Downloading/Uploading
 
 Normally, iOS interrupts network connections when an app is moved to the background, and will throw an error 'Lost connection to background transfer service' when the app resumes. To continue the upload or download of large files even when the app is in the background, you will need to enable IOSDownloadTask or IOSUploadTask options. The following example shows how to download a file in the background - uploading is similar except for using the IOSUploadTask config option instead.
 
