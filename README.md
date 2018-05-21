@@ -35,7 +35,7 @@ A project committed to making file access and data transfer easier and more effi
  * [Multipart/form upload](#multipartform-data-example-post-form-data-with-file-and-data)
  * [Upload/Download progress](#user-content-uploaddownload-progress)
  * [Cancel HTTP request](#user-content-cancel-request)
- * [iOS Background Downloading/Uploading](#user-content-ios-background-downloading-uploading)
+ * [iOS Background Downloading/Uploading](#user-content-ios-background-downloadinguploading)
  * [Android Media Scanner, and Download Manager Support](#user-content-android-media-scanner-and-download-manager-support)
  * [Self-Signed SSL Server](#user-content-self-signed-ssl-server)
  * [Transfer Encoding](#user-content-transfer-encoding)
