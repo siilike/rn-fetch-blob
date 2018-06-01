@@ -670,7 +670,7 @@ didFinishDownloadingToURL:(NSURL *)location {
 
     if(respFile == YES)
     {
-        //[writeStream close];
+        [writeStream close];
         rnfbRespType = RESP_TYPE_PATH;
         respStr = destPath;
     }
