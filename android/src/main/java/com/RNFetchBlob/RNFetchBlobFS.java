@@ -9,6 +9,7 @@ import android.os.Environment;
 import android.os.StatFs;
 import android.os.SystemClock;
 import android.util.Base64;
+import android.util.Log;
 
 import com.RNFetchBlob.Utils.PathResolver;
 import com.facebook.react.bridge.Arguments;
@@ -296,7 +297,7 @@ class RNFetchBlobFS {
             return "";
         }
     }
-    
+
     /**
      * Static method that returns a temp file path
      * @param taskId    An unique string for identify
