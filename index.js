@@ -219,7 +219,7 @@ function fetch(...args:any):Promise {
   let options = this || {}
   let subscription, subscriptionUpload, stateEvent, partEvent
   let respInfo = {}
-  let [method, url, headers, body] = [...args]
+  let [method, url, headers = {}, body] = [...args]
 
   // # 241 normalize null or undefined headers, in case nil or null string
   // pass to native context
