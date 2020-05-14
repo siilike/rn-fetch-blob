@@ -23,7 +23,6 @@
 #import "RCTEventDispatcher.h"
 #endif
 
-#import "DDFileReader.h"
 
 NSMutableDictionary *fileStreams = nil;
 
@@ -165,96 +164,68 @@ NSMutableDictionary *fileStreams = nil;
         __block int read = 0;
         __block int backoff = tick *1000;
         __block int chunkSize = bufferSize;
-        
-        if ( bufferSize == -1 && [[encoding lowercaseString] isEqualToString:@"utf8"])
+        // allocate buffer in heap instead of stack
+        uint8_t * buffer;
+        @try
         {
-            @try
+            buffer = (uint8_t *) malloc(bufferSize);
+            if(path != nil)
             {
-                DDFileReader * reader = [[DDFileReader alloc] initWithFilePath:path];
-                [reader enumerateLinesUsingBlock:^(NSString * line, BOOL * stop) {
-                  [[self class] emitDataChunks:[line dataUsingEncoding:NSUTF8StringEncoding] encoding:encoding streamId:streamId event:event];
-                  if(tick > 0)
-                  {
-                      usleep(backoff);
-                  }
-                }];
-                //[reader release];
-            }
-            @catch (NSError * err)
-            {
-                NSDictionary * payload = @{ @"event": FS_EVENT_ERROR, @"code": @"EUNSPECIFIED", @"detail": [err description] };
-                [event sendDeviceEventWithName:streamId body:payload];
-            }
-            @finally
-            {
-                NSDictionary * payload = @{ @"event": FS_EVENT_END, @"detail": @"" };
-                [event sendDeviceEventWithName:streamId body:payload];
-            }
-        }
-        else
-        {
-            // allocate buffer in heap instead of stack
-            uint8_t * buffer;
-            @try
-            {
-                buffer = (uint8_t *) malloc(bufferSize);
-                if(path != nil)
+                if([[NSFileManager defaultManager] fileExistsAtPath:path] == NO)
                 {
-                    if([[NSFileManager defaultManager] fileExistsAtPath:path] == NO)
-                    {
-                        NSString * message = [NSString stringWithFormat:@"File does not exist at path %@", path];
-                        NSDictionary * payload = @{ @"event": FS_EVENT_ERROR, @"code": @"ENOENT", @"detail": message };
-                        [event sendDeviceEventWithName:streamId body:payload];
-                        free(buffer);
-                        return ;
-                    }
-                    NSInputStream * stream = [[NSInputStream alloc] initWithFileAtPath:path];
-                    [stream open];
-                    while((read = [stream read:buffer maxLength:bufferSize]) > 0)
-                    {
-                        [[self class] emitDataChunks:[NSData dataWithBytes:buffer length:read] encoding:encoding streamId:streamId event:event];
-                        if(tick > 0)
-                        {
-                            usleep(backoff);
-                        }
-                    }
-                    [stream close];
-                }
-                else if (asset != nil)
-                {
-                    int cursor = 0;
-                    NSError * err;
-                    while((read = [asset getBytes:buffer fromOffset:cursor length:bufferSize error:&err]) > 0)
-                    {
-                        cursor += read;
-                        [[self class] emitDataChunks:[NSData dataWithBytes:buffer length:read] encoding:encoding streamId:streamId event:event];
-                        if(tick > 0)
-                        {
-                            usleep(backoff);
-                        }
-                    }
-                }
-                else
-                {
-                    NSDictionary * payload = @{ @"event": FS_EVENT_ERROR, @"code": @"EINVAL", @"detail": @"Unable to resolve URI" };
+                    NSString * message = [NSString stringWithFormat:@"File does not exist at path %@", path];
+                    NSDictionary * payload = @{ @"event": FS_EVENT_ERROR, @"code": @"ENOENT", @"detail": message };
                     [event sendDeviceEventWithName:streamId body:payload];
-                }
-                // release buffer
-                if(buffer != nil)
                     free(buffer);
+                    return ;
+                }
+                NSInputStream * stream = [[NSInputStream alloc] initWithFileAtPath:path];
+                [stream open];
+                while((read = [stream read:buffer maxLength:bufferSize]) > 0)
+                {
+                    [[self class] emitDataChunks:[NSData dataWithBytes:buffer length:read] encoding:encoding streamId:streamId event:event];
+                    if(tick > 0)
+                    {
+                        usleep(backoff);
+                    }
+                }
+                [stream close];
+            }
+            else if (asset != nil)
+            {
+                int cursor = 0;
+                NSError * err;
+                while((read = [asset getBytes:buffer fromOffset:cursor length:bufferSize error:&err]) > 0)
+                {
+                    cursor += read;
+                    [[self class] emitDataChunks:[NSData dataWithBytes:buffer length:read] encoding:encoding streamId:streamId event:event];
+                    if(tick > 0)
+                    {
+                        usleep(backoff);
+                    }
+                }
+            }
+            else
+            {
+                NSDictionary * payload = @{ @"event": FS_EVENT_ERROR, @"code": @"EINVAL", @"detail": @"Unable to resolve URI" };
+                [event sendDeviceEventWithName:streamId body:payload];
+            }
+            // release buffer
+            if(buffer != nil)
+                free(buffer);
 
-            }
-            @catch (NSError * err)
-            {
-                NSDictionary * payload = @{ @"event": FS_EVENT_ERROR, @"code": @"EUNSPECIFIED", @"detail": [err description] };
-                [event sendDeviceEventWithName:streamId body:payload];
-            }
-            @finally
-            {
-                NSDictionary * payload = @{ @"event": FS_EVENT_END, @"detail": @"" };
-                [event sendDeviceEventWithName:streamId body:payload];
-            }
         }
+        @catch (NSError * err)
+        {
+            NSDictionary * payload = @{ @"event": FS_EVENT_ERROR, @"code": @"EUNSPECIFIED", @"detail": [err description] };
+            [event sendDeviceEventWithName:streamId body:payload];
+        }
+        @finally
+        {
+            NSDictionary * payload = @{ @"event": FS_EVENT_END, @"detail": @"" };
+            [event sendDeviceEventWithName:streamId body:payload];
+        }
+
     }];
 
 
