@@ -27,6 +27,20 @@
 @property(nonnull, nonatomic) NSMapTable<NSString*, RNFetchBlobRequest*> * requestsTable;
 @property(nonnull, nonatomic) NSMutableDictionary<NSString*, RNFetchBlobProgress*> *rebindProgressDict;
 @property(nonnull, nonatomic) NSMutableDictionary<NSString*, RNFetchBlobProgress*> *rebindUploadProgressDict;
+@property (nullable, nonatomic) NSString * taskId;
+@property (nonatomic) int expectedBytes;
+@property (nonatomic) int receivedBytes;
+@property (nonatomic) BOOL isServerPush;
+@property (nullable, nonatomic) NSMutableData * respData;
+@property (strong, nonatomic) RCTResponseSenderBlock callback;
+@property (nullable, nonatomic) RCTBridge * bridge;
+@property (nullable, nonatomic) NSDictionary * options;
+@property (nullable, nonatomic) RNFetchBlobFS * fileStream;
+@property (strong, nonatomic) CompletionHander fileTaskCompletionHandler;
+@property (strong, nonatomic) DataTaskCompletionHander dataTaskCompletionHandler;
+
+@property (nullable, nonatomic) NSError * error;
+@property (nonatomic, strong) __block NSURLSession * session;
 
 + (RNFetchBlobNetwork* _Nullable)sharedInstance;
 + (NSMutableDictionary  * _Nullable ) normalizeHeaders:(NSDictionary * _Nullable)headers;
