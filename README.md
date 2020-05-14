@@ -1,15 +1,11 @@
-# New Releases
-In order to publish new releases from this fork, we have renamed this project to
-`rn-fetch-blob` and published to `https://www.npmjs.com/package/rn-fetch-blob`.
-
-**Note**: If upgrading from the original fork change all references in your project from `react-native-fetch-blob` to `rn-fetch-blob`.  This includes `*.xcodeproj/project.pbxproj` and `android/**/*.gradle` depending on the platform used, failing to do so may cause build errors.
-
 # rn-fetch-blob
 [![release](https://img.shields.io/github/release/joltup/rn-fetch-blob.svg?style=flat-square)](https://github.com/joltup/rn-fetch-blob/releases) [![npm](https://img.shields.io/npm/v/rn-fetch-blob.svg?style=flat-square)](https://www.npmjs.com/package/rn-fetch-blob) ![](https://img.shields.io/badge/PR-Welcome-brightgreen.svg?style=flat-square) [![](https://img.shields.io/badge/Wiki-Public-brightgreen.svg?style=flat-square)](https://github.com/joltup/rn-fetch-blob/wiki) [![npm](https://img.shields.io/npm/l/rn-fetch-blob.svg?maxAge=2592000&style=flat-square)]()
 
-
 A project committed to making file access and data transfer easier and more efficient for React Native developers.
-> For Firebase Storage solution, please upgrade to the latest version for the best compatibility.
+
+# Version Compatibility Warning
+
+rn-fetch-blob version 0.10.16 is only compatible with react native 0.60 and up. It should have been a major version bump, we apologize for the mistake. If you are not yet upgraded to react native 0.60 or above, you should remain on rn-fetch-blob version 0.10.15
 
 ## Features
 - Transfer data directly from/to storage without BASE64 bridging
@@ -24,7 +20,7 @@ A project committed to making file access and data transfer easier and more effi
 * [Installation](#user-content-installation)
 * [HTTP Data Transfer](#user-content-http-data-transfer)
  * [Regular Request](#user-content-regular-request)
- * [Download file](#user-content-download-example--fetch-files-that-needs-authorization-token)
+ * [Download file](#download-example-fetch-files-that-need-authorization-token)
  * [Upload file](#user-content-upload-example--dropbox-files-upload-api)
  * [Multipart/form upload](#user-content-multipartform-data-example--post-form-data-with-file-and-data)
  * [Upload/Download progress](#user-content-uploaddownload-progress)
@@ -45,7 +41,7 @@ A project committed to making file access and data transfer easier and more effi
 
 ## About
 
-This project was started in the cause of solving issue [facebook/react-native#854](https://github.com/facebook/react-native/issues/854), React Native's lacks of `Blob` implementation which results into problems when transferring binary data. 
+This project was started in the cause of solving issue [facebook/react-native#854](https://github.com/facebook/react-native/issues/854), React Native's lacks of `Blob` implementation which results into problems when transferring binary data.
 
 It is committed to making file access and transfer easier and more efficient for React Native developers. We've implemented highly customizable filesystem and network module which plays well together. For example, developers can upload and download data directly from/to storage, which is more efficient, especially for large files. The file system supports file stream, so you don't have to worry about OOM problem when accessing large files.
 
@@ -83,7 +79,7 @@ If automatically linking doesn't work for you, see instructions on [manually lin
 For 0.29.2+ projects, simply link native packages via the following command (note: rnpm has been merged into react-native)
 
 ```
-react-native link
+react-native link rn-fetch-blob
 ```
 
 As for projects < 0.29 you need `rnpm` to link native packages
@@ -95,7 +91,7 @@ rnpm link
 Optionally, use the following command to add Android permissions to `AndroidManifest.xml` automatically
 
 ```sh
-RNFB_ANDROID_PERMISSIONS=true react-native link
+RNFB_ANDROID_PERMISSIONS=true react-native link rn-fetch-blob
 ```
 
 pre 0.29 projects
@@ -120,8 +116,8 @@ If you're going to access external storage (say, SD card storage) for `Android 5
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
-+   <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />                                               
-+   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />                                              
++   <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
++   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 +   <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION" />
     ...
 
@@ -133,8 +129,16 @@ Also, if you're going to use `Android Download Manager` you have to add this to 
     <intent-filter>
             <action android:name="android.intent.action.MAIN" />
             <category android:name="android.intent.category.LAUNCHER" />
-+           <action android:name="android.intent.action.DOWNLOAD_COMPLETE"/>                          
++           <action android:name="android.intent.action.DOWNLOAD_COMPLETE"/>
     </intent-filter>
+```
+
+If you are going to use the `wifiOnly` flag, you need to add this to `AndroidManifest.xml`
+
+```diff
++   <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    ...
+
 ```
 
 **Grant Access Permission for Android 6.0**
@@ -172,7 +176,7 @@ To sum up:
 
 - To send a form data, the `Content-Type` header does not matter. When the body is an `Array` we will set proper content type for you.
 - To send binary data, you have two choices, use BASE64 encoded string or path points to a file contains the body.
- - If the `Content-Type` containing substring`;BASE64` or `application/octet` the given body will be considered as a BASE64 encoded data which will be decoded to binary data as the request body.   
+ - If the `Content-Type` containing substring`;BASE64` or `application/octet` the given body will be considered as a BASE64 encoded data which will be decoded to binary data as the request body.
  - Otherwise, if a string starts with `RNFetchBlob-file://` (which can simply be done by `RNFetchBlob.wrap(PATH_TO_THE_FILE)`), it will try to find the data from the URI string after `RNFetchBlob-file://` and use it as the request body.
 - To send the body as-is, simply use a `Content-Type` header not containing `;BASE64` or `application/octet`.
 
@@ -193,7 +197,7 @@ RNFetchBlob.fetch('GET', 'http://www.example.com/images/img1.png', {
   })
   .then((res) => {
     let status = res.info().status;
-    
+
     if(status == 200) {
       // the conversion is done in native code
       let base64Str = res.base64()
@@ -294,7 +298,7 @@ RNFetchBlob.fetch('POST', 'https://content.dropboxapi.com/2/files/upload', {
     'Content-Type' : 'application/octet-stream',
     // here's the body you're going to send, should be a BASE64 encoded string
     // (you can use "base64"(refer to the library 'mathiasbynens/base64') APIs to make one).
-    // The data will be converted to "byte array"(say, blob) before request sent.  
+    // The data will be converted to "byte array"(say, blob) before request sent.
   }, base64ImageString)
   .then((res) => {
     console.log(res.text())
@@ -652,7 +656,7 @@ RNFetchBlob.fs.readStream(
     ifstream.onError((err) => {
       console.log('oops', err)
     })
-    ifstream.onEnd(() => {  
+    ifstream.onEnd(() => {
       <Image source={{ uri : 'data:image/png,base64' + data }}
     })
 })
@@ -677,7 +681,7 @@ RNFetchBlob.fs.writeStream(
 .catch(console.error)
 ```
 
-or 
+or
 
 ```js
 RNFetchBlob.fs.writeStream(
@@ -753,7 +757,7 @@ You can also group requests by using `session` API and use `dispose` to remove t
   .then((res) => {
     // set session of a response
     res.session('foo')
-  })  
+  })
 
   RNFetchblob.config({
     // you can also set session beforehand
@@ -763,7 +767,7 @@ You can also group requests by using `session` API and use `dispose` to remove t
   .fetch('GET', 'http://example.com/download/file')
   .then((res) => {
     // ...
-  })  
+  })
 
   // or put an existing file path to the session
   RNFetchBlob.session('foo').add('some-file-path')
@@ -791,6 +795,22 @@ By default, rn-fetch-blob does NOT allow connection to unknown certification pro
 ```js
 RNFetchBlob.config({
   trusty : true
+})
+.fetch('GET', 'https://mysite.com')
+.then((resp) => {
+  // ...
+})
+```
+
+### WiFi only requests
+
+If you wish to only route requests through the Wifi interface, set the below configuration.
+Note: On Android, the `ACCESS_NETWORK_STATE` permission must be set, and this flag will only work
+on API version 21 (Lollipop, Android 5.0) or above. APIs below 21 will ignore this flag.
+
+```js
+RNFetchBlob.config({
+  wifiOnly : true
 })
 .fetch('GET', 'https://mysite.com')
 .then((resp) => {

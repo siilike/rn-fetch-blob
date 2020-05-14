@@ -6,7 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
-import android.support.v4.content.FileProvider;
+import androidx.core.content.FileProvider;
 import android.util.SparseArray;
 
 import com.facebook.react.bridge.ActivityEventListener;
@@ -28,7 +28,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.JavaNetCookieJar;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -119,9 +118,9 @@ public class RNFetchBlob extends ReactContextBaseJavaModule {
 
                 // Set flag to give temporary permission to external app to use FileProvider
                 intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-
-                // All the activity to be opened outside of an activity
+                 // All the activity to be opened outside of an activity
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
                 // Validate that the device can open the file
                 PackageManager pm = getCurrentActivity().getPackageManager();
                 if (intent.resolveActivity(pm) != null) {
